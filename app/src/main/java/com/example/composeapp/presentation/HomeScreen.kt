@@ -4,9 +4,13 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,40 +19,65 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.composeapp.component.MainCard
+import com.example.composeapp.component.MovieBannerCard
 import com.example.composeapp.data.MovieData
 import com.example.composeapp.ui.theme.ComposeAppTheme
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination?.route
     val movies = MovieData.dummyMovies
 
-    LazyVerticalGrid(
-
-        columns = GridCells.Adaptive(minSize = 160.dp),
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(8.dp),
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 12.dp),
+        verticalArrangement = Arrangement.Center,
 
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+
     ) {
-        items(movies) {movie ->
-            MainCard(
-                imageUrl = movie.imageUrl,
-                title = movie.title,
-                text = movie.desc,
-                modifier = Modifier.fillMaxWidth()
-            )
+        MovieBannerCard(
+            modifier = Modifier
 
+                .fillMaxWidth(),
+            navController = navController
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyVerticalGrid(
+
+            columns = GridCells.Adaptive(minSize = 160.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background),
+            contentPadding = PaddingValues(vertical = 8.dp),
+
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(movies) {movie ->
+                MainCard(
+                    imageUrl = movie.imageUrl,
+                    title = movie.title,
+                    text = movie.desc,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+            }
         }
     }
+
+
 }
 
 @Preview(name = "Light Mode")

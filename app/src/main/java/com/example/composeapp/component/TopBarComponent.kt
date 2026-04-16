@@ -52,7 +52,7 @@ fun TopBarHomeScreen(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
-            .padding(bottom = 12.dp)
+            .padding(8.dp)
             .statusBarsPadding()
     ){
         Row(

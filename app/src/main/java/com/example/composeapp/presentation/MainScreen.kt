@@ -1,7 +1,6 @@
 package com.example.composeapp.presentation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,8 +13,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.composeapp.component.BottomNavComponent
+import com.example.composeapp.component.bottomNav.BottomNavComponent
 import com.example.composeapp.component.TopBarHomeScreen
+import com.example.composeapp.component.bottomNav.AnimatedBottomNav
+import com.example.composeapp.component.bottomNav.CustomBottomNav
 import com.example.composeapp.navigation.Screen
 
 @Composable
@@ -41,7 +42,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             }
         },
         bottomBar = {
-            BottomNavComponent(navController = navController)
+            AnimatedBottomNav(navController = navController)
         }
     ) { innerPadding ->
         NavHost(
@@ -49,9 +50,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ){
+
+            composable(Screen.History.route) { HistoryScreen() }
             composable(Screen.Home.route){HomeScreen()}
             composable(Screen.Profile.route) { ProfileScreen() }
-            composable(Screen.History.route) { HistoryScreen() }
         }
 
     }

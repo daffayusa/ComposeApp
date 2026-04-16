@@ -14,6 +14,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,6 +25,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -42,13 +45,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.composeapp.R
 import com.example.composeapp.ui.theme.ComposeAppTheme
@@ -64,7 +70,7 @@ fun MainCard(
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 12.dp
+            defaultElevation = 8.dp
         ),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -207,7 +213,7 @@ fun MovieBannerCard(
     ) {
         Row(
             modifier = modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
                 modifier = Modifier
@@ -216,12 +222,45 @@ fun MovieBannerCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Nonton Film \\nTerbaru Hari Ini!",
-                    style = MaterialTheme.typography.titleMedium.copy(
+                    text = "Nonton Film \nTerbaru Hari Ini!",
+                    style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         lineHeight = 28.sp,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = {TODO()},
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.height(32.dp)
+                ){
+                    Text(text = "Cek Sekarang", fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimary, style =
+                        TextStyle(
+                            lineHeightStyle = LineHeightStyle(
+                                alignment = LineHeightStyle.Alignment.Center,
+                                trim = LineHeightStyle.Trim.None
+                            )
+                        ))
+                }
+
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.8f)
+
+            ){
+                Image(
+                    painter = painterResource(R.drawable.img_movie),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center
                 )
             }
 
@@ -234,12 +273,16 @@ fun MovieBannerCard(
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun CardComponnetPrev() {
-
+    val navController = rememberNavController()
     Box(modifier = Modifier.padding(16.dp)){
-        MainCard(
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/4/4c/Blackcat-Lilith.jpg",
-            title = "Kucing Hitam",
-            text = "Kucing hitam adalah kucing domestik dengan bulu hitam. Mereka mungkin merupakan ras tertentu, atau kucing domestik biasa tanpa ras khusus. Kebanyakan kucing hitam memiliki iris mata berwarna emas karena kandungan pigmen melaninnya yang tinggi."
+//        MainCard(
+//            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/4/4c/Blackcat-Lilith.jpg",
+//            title = "Kucing Hitam",
+//            text = "Kucing hitam adalah kucing domestik dengan bulu hitam. Mereka mungkin merupakan ras tertentu, atau kucing domestik biasa tanpa ras khusus. Kebanyakan kucing hitam memiliki iris mata berwarna emas karena kandungan pigmen melaninnya yang tinggi."
+//        )
+        MovieBannerCard(
+            modifier = Modifier,
+            navController = navController
         )
     }
 }
