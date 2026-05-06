@@ -131,9 +131,9 @@ fun Circle(
     modifier: Modifier = Modifier,
     color: Color,
     radius: Dp,
-    icon: ImageVector,
+    icon: ImageVector?,
     iconColor: Color,
-    title: String
+    title: String?
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -151,7 +151,13 @@ fun Circle(
                         scaleOut(animationSpec = spring(0.6f, Spring.StiffnessLow))
             }
         ) { targetIcon ->
-            Icon(targetIcon, contentDescription = title, tint = iconColor)
+            if (targetIcon != null) {
+                Icon(
+                    imageVector = targetIcon,
+                    contentDescription = title,
+                    tint = iconColor
+                )
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.composeapp.component.bottomNav
 
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -8,6 +9,8 @@ import androidx.compose.animation.core.animateIntOffset
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,12 +24,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,160 +62,221 @@ import com.example.composeapp.component.TopBarHomeScreen
 import com.example.composeapp.navigation.Screen
 import com.example.composeapp.ui.theme.ComposeAppTheme
 
-@Composable
-fun BottomNavComponent(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
-    val navigationItems = listOf(
-        Screen.Home,
-        Screen.History,
-        Screen.Profile
-    )
-
-    NavigationBar(
-        modifier = modifier,
-
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        tonalElevation = 8.dp
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-
-        navigationItems.forEach { item ->
-            val isSelected = currentDestination?.hierarchy?.any { it.route == item.route } == true
-
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = item.title
-                    )
-                },
-                label = { Text(item.title) },
-                selected = isSelected,
-                onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun CustomBottomNav(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
-    val navigationItems = listOf(Screen.History, Screen.Home, Screen.Profile)
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    val selectedIndex = navigationItems.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
-
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val density = LocalDensity.current
-
-    val tabWidth = with(density) { (screenWidth - 32.dp).toPx() / navigationItems.size }
-    val animatedOffset by animateFloatAsState(
-        targetValue = (tabWidth * selectedIndex) + (tabWidth / 2),
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-    )
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .height(70.dp)
-            .graphicsLayer {
-                shape = BottomNavShape(
-                    offset = animatedOffset,
-                    circleRadius = 80f // Sesuaikan kedalaman lekukan
-                )
-                clip = true
-            }
-            .background(Color.White),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            navigationItems.forEachIndexed { index, item ->
-                val isSelected = selectedIndex == index
-
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-
-                        modifier = Modifier.offset(y = if (isSelected) (-25).dp else 0.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(if (isSelected) 50.dp else 24.dp)
-                                .background(
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = item.icon,
-                                contentDescription = item.title,
-                                tint = if (isSelected) Color.White else Color.Gray,
-                                modifier = Modifier.size(if (isSelected) 28.dp else 24.dp)
-                            )
-                        }
-                        if (!isSelected) {
-                            Text(text = item.title, fontSize = 10.sp, color = Color.Gray)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun BottomNavComponent(
+//    navController: NavHostController,
+//    modifier: Modifier = Modifier
+//) {
+//    val navigationItems = listOf(
+//        Screen.Home,
+//        Screen.History,
+//        Screen.Profile
+//    )
+//
+//    NavigationBar(
+//        modifier = modifier,
+//
+//        containerColor = MaterialTheme.colorScheme.surface,
+//        contentColor = MaterialTheme.colorScheme.onSurface,
+//        tonalElevation = 8.dp
+//    ) {
+//        val navBackStackEntry by navController.currentBackStackEntryAsState()
+//        val currentDestination = navBackStackEntry?.destination
+//
+//        navigationItems.forEach { item ->
+//            val isSelected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+//
+//            NavigationBarItem(
+//                icon = {
+//                    Icon(
+//                        imageVector = item.icon,
+//                        contentDescription = item.title
+//                    )
+//                },
+//                label = { Text(item.title) },
+//                selected = isSelected,
+//                onClick = {
+//                    navController.navigate(item.route) {
+//                        popUpTo(navController.graph.findStartDestination().id) {
+//                            saveState = true
+//                        }
+//                        launchSingleTop = true
+//                        restoreState = true
+//                    }
+//                },
+//                colors = NavigationBarItemDefaults.colors(
+//                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+//                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+//                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            )
+//        }
+//    }
+//}
+//
+//@Composable
+//fun CustomBottomNav(
+//    navController: NavHostController,
+//    modifier: Modifier = Modifier
+//) {
+//    val navigationItems = listOf(Screen.History, Screen.Home, Screen.Profile)
+//    val navBackStackEntry by navController.currentBackStackEntryAsState()
+//    val currentRoute = navBackStackEntry?.destination?.route
+//
+//    val selectedIndex = navigationItems.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
+//
+//    val configuration = LocalConfiguration.current
+//    val screenWidth = configuration.screenWidthDp.dp
+//    val density = LocalDensity.current
+//
+//    val tabWidth = with(density) { (screenWidth - 32.dp).toPx() / navigationItems.size }
+//    val animatedOffset by animateFloatAsState(
+//        targetValue = (tabWidth * selectedIndex) + (tabWidth / 2),
+//        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+//    )
+//
+//    Box(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(16.dp)
+//            .height(70.dp)
+//            .graphicsLayer {
+//                shape = BottomNavShape(
+//                    offset = animatedOffset,
+//                    circleRadius = 80f // Sesuaikan kedalaman lekukan
+//                )
+//                clip = true
+//            }
+//            .background(Color.White),
+//        contentAlignment = Alignment.BottomCenter
+//    ) {
+//
+//        Row(
+//            modifier = Modifier.fillMaxSize(),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            navigationItems.forEachIndexed { index, item ->
+//                val isSelected = selectedIndex == index
+//
+//                Box(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .clickable(
+//                            interactionSource = remember { MutableInteractionSource() },
+//                            indication = null
+//                        ) {
+//                            navController.navigate(item.route) {
+//                                popUpTo(navController.graph.findStartDestination().id) {
+//                                    saveState = true
+//                                }
+//                                launchSingleTop = true
+//                                restoreState = true
+//                            }
+//                        },
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Column(
+//                        horizontalAlignment = Alignment.CenterHorizontally,
+//
+//                        modifier = Modifier.offset(y = if (isSelected) (-25).dp else 0.dp)
+//                    ) {
+//                        Box(
+//                            modifier = Modifier
+//                                .size(if (isSelected) 50.dp else 24.dp)
+//                                .background(
+//                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+//                                    shape = CircleShape
+//                                ),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Icon(
+//                                imageVector = item.icon,
+//                                contentDescription = item.title,
+//                                tint = if (isSelected) Color.White else Color.Gray,
+//                                modifier = Modifier.size(if (isSelected) 28.dp else 24.dp)
+//                            )
+//                        }
+//                        if (!isSelected) {
+//                            Text(text = item.title, fontSize = 10.sp, color = Color.Gray)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//fun MovieFloatingNavBar(
+//    navController: NavHostController,
+//    isVisible: Boolean // State untuk mengontrol muncul/sembunyi
+//) {
+//    val screens = listOf(
+//        Screen.Home,
+//        Screen.Profile,
+//        Screen.Profile
+//    )
+//    val navBackStackEntry by navController.currentBackStackEntryAsState()
+//    val currentDestination = navBackStackEntry?.destination
+//
+//    AnimatedVisibility(
+//        visible = isVisible,
+//        enter = slideInVertically(initialOffsetY = { it }),
+//        exit = slideOutVertically(targetOffsetY = { it }),
+//    ) {
+//        Surface(
+//            modifier = Modifier
+//                .padding(horizontal = 24.dp, vertical = 24.dp)
+//                .fillMaxWidth(),
+//            shape = RoundedCornerShape(20.dp),
+//            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
+//            tonalElevation = 10.dp,
+//            shadowElevation = 10.dp
+//        ) {
+//            NavigationBar(
+//                containerColor = Color.Transparent,
+//                modifier = Modifier.height(64.dp)
+//            ) {
+//                screens.forEach { screen ->
+//                    val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+//
+//                    NavigationBarItem(
+//                        selected = selected,
+//                        onClick = {
+//                            navController.navigate(screen.route) {
+//                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+//                                launchSingleTop = true
+//                                restoreState = true
+//                            }
+//                        },
+//                        icon = {
+//                            Icon(
+//                                imageVector = screen.icon,
+//                                contentDescription = screen.title,
+//                                tint = if (selected) MaterialTheme.colorScheme.primary
+//                                else MaterialTheme.colorScheme.onSurfaceVariant
+//                            )
+//                        },
+//                        // Kita hilangkan label agar lebih minimalis (Floating Style)
+//                        alwaysShowLabel = false,
+//                        colors = NavigationBarItemDefaults.colors(
+//                            indicatorColor = Color.Transparent // Menghilangkan background bulat bawaan M3
+//                        )
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun AnimatedBottomNav(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
+    pagerState: PagerState,
+    navigationItems: List<Screen>,
+    onPageSelected: (Int) -> Unit
 ) {
-    val navigationItems = listOf(Screen.History, Screen.Home, Screen.Profile)
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
 
-    val selectedItem = navigationItems.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
+    val selectedItem = pagerState.currentPage
 
     val barColor = MaterialTheme.colorScheme.primaryContainer
     val circleColor = MaterialTheme.colorScheme.primary
@@ -253,7 +320,7 @@ fun AnimatedBottomNav(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 2.dp)
+            .padding(start = 24.dp, end = 24.dp, bottom = 32.dp, top = 16.dp)
     ) {
         // Bola yang melompat
         Circle(
@@ -262,61 +329,69 @@ fun AnimatedBottomNav(
                 .zIndex(1f),
             color = circleColor,
             radius = circleRadius,
-            icon = navigationItems[selectedItem].icon,
+            icon = navigationItems[selectedItem].icon ,
             iconColor = selectedColor,
             title = navigationItems[selectedItem].title
         )
 
-        // Bar Utama
-        Row(
+        Surface(
             modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
                 .onPlaced { barSize = it.size }
                 .graphicsLayer {
                     shape = barShape
                     clip = true
-                }
-                .fillMaxWidth()
-                .height(64.dp)
-                .background(barColor),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+                },
+            shape = RoundedCornerShape(24.dp),
+            color = barColor,
+            tonalElevation = 8.dp
         ) {
-            navigationItems.forEachIndexed { index, screen ->
-                val isSelected = index == selectedItem
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                navigationItems.forEachIndexed { index, screen ->
+                    val isSelected = index == selectedItem
 
-                NavigationBarItem(
-                    selected = isSelected,
-                    onClick = {
-                        if (!isSelected) {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
+                    NavigationBarItem(
+                        selected = isSelected,
+                        onClick = {
+                            if (!isSelected) {
+                                onPageSelected(index)
                             }
-                        }
-                    },
-                    icon = {
-                        val iconAlpha by animateFloatAsState(
-                            targetValue = if (isSelected) 0f else 1f,
-                            label = "Navbar item icon"
+                        },
+                        icon = {
+                            val iconAlpha by animateFloatAsState(
+                                targetValue = if (isSelected) 0f else 1f,
+                                label = "Navbar item icon"
+                            )
+                            screen.icon?.let { imgVector ->
+                                Icon(
+                                    imageVector = imgVector,
+                                    contentDescription = screen.title,
+                                    modifier = Modifier.alpha(iconAlpha)
+                                )
+                            }
+                        },
+                        label = {
+                            // Perbaikan 3: Cek apakah title ada sebelum merender Text
+                            if (!isSelected) {
+                                screen.title?.let { labelText ->
+                                    Text(labelText, fontSize = 10.sp)
+                                }
+                            }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.Transparent,
+                            selectedTextColor = Color.Transparent,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor,
+                            indicatorColor = Color.Transparent
                         )
-                        Icon(
-                            imageVector = screen.icon,
-                            contentDescription = screen.title,
-                            modifier = Modifier.alpha(iconAlpha)
-                        )
-                    },
-                    label = {
-                        if (!isSelected) Text(screen.title, fontSize = 10.sp)
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Transparent, // Sembunyikan karena sudah ada di bola
-                        selectedTextColor = Color.Transparent,
-                        unselectedIconColor = unselectedColor,
-                        unselectedTextColor = unselectedColor,
-                        indicatorColor = Color.Transparent
                     )
-                )
+                }
             }
         }
     }
@@ -328,9 +403,9 @@ fun AnimatedBottomNav(
 private fun BottomBarPrev() {
     val navController = rememberNavController()
     ComposeAppTheme {
-        AnimatedBottomNav(
-            navController
-        )
+//        AnimatedBottomNav(
+//            navController
+//        )
     }
 
 }

@@ -51,7 +51,7 @@ fun TopBarHomeScreen(
 ) {
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.primary)
             .padding(8.dp)
             .statusBarsPadding()
     ){
@@ -75,7 +75,7 @@ fun TopBarHomeScreen(
                         .height(50.dp),
                     painter = painterResource(id = R.drawable.cat),
                     contentScale = ContentScale.Crop,
-                    contentDescription = "Profile Pictore"
+                    contentDescription = "Profile Picture"
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(
@@ -88,7 +88,7 @@ fun TopBarHomeScreen(
                         fontStyle = FontStyle.Italic,
                         lineHeight = 22.sp,
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.surface
                         )
                     )
                     Text(
@@ -97,7 +97,7 @@ fun TopBarHomeScreen(
                         lineHeight = 22.sp,
                         fontWeight = FontWeight(500),
                         style = TextStyle(
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.surface
                         )
 
                     )

@@ -7,8 +7,14 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class Screen(val route : String, val title: String, val icon: ImageVector){
-    object Home : Screen("home", "Home", Icons.Default.Home)
-    object History : Screen("history", "History", Icons.Default.DateRange)
-    object Profile : Screen("profile", "Profile", Icons.Default.Person)
+sealed class Screen(
+    val route: String,
+    val title: String? = null,
+    val icon: ImageVector? = null
+) {
+    data object History : Screen("history", "History", Icons.Default.DateRange)
+    data object Home : Screen("home", "Home", Icons.Default.Home)
+    data object Profile : Screen("profile", "Profile", Icons.Default.Person)
+
+    data object Detail : Screen("detail")
 }
