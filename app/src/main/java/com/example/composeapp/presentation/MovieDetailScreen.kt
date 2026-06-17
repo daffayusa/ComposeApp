@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -49,6 +51,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.composeapp.data.MovieData
+import com.example.composeapp.navigation.Screen
 
 @Composable
 fun MovieDetailScreen(
@@ -60,10 +63,10 @@ fun MovieDetailScreen(
 
     Scaffold(
         bottomBar = {
-
             Button(
-                onClick = { /* Aksi Nonton */ },
+                onClick = { navController.navigate(Screen.Booking.route + "/$movieId") },
                 modifier = Modifier
+                    .navigationBarsPadding()
                     .fillMaxWidth()
                     .padding(16.dp)
                     .height(56.dp),
@@ -96,7 +99,8 @@ fun MovieDetailScreen(
                 IconButton(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
-                        .padding(top = 40.dp, start = 16.dp)
+                        .statusBarsPadding()
+                        .padding(top = 8.dp, start = 16.dp)
                         .background(Color.Black.copy(alpha = 0.3f), CircleShape)
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)

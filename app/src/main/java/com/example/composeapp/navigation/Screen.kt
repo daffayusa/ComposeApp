@@ -17,4 +17,5 @@ sealed class Screen(
     data object Profile : Screen("profile", "Profile", Icons.Default.Person)
 
     data object Detail : Screen("detail")
+    data object Booking : Screen("booking")
 }

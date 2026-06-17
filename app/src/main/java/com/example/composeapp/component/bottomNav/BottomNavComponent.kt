@@ -272,6 +272,7 @@ import com.example.composeapp.ui.theme.ComposeAppTheme
 @Composable
 fun AnimatedBottomNav(
     pagerState: PagerState,
+    modifier: Modifier,
     navigationItems: List<Screen>,
     onPageSelected: (Int) -> Unit
 ) {
@@ -318,9 +319,9 @@ fun AnimatedBottomNav(
         )
     }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(start = 24.dp, end = 24.dp, bottom = 32.dp, top = 16.dp)
+            .padding(start = 24.dp, end = 24.dp, bottom = 8.dp, top = 16.dp)
     ) {
         // Bola yang melompat
         Circle(

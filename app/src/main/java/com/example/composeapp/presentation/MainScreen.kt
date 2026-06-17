@@ -3,6 +3,7 @@ package com.example.composeapp.presentation
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -41,21 +42,26 @@ import kotlinx.coroutines.launch
 fun MainScreen() {
     val navController = rememberNavController()
 
-    // NavHost global untuk mengatur perpindahan ke DetailScreen
     NavHost(navController = navController, startDestination = "main_pager") {
 
-        // Rute 1: Konten utama dengan Pager dan BottomNav
         composable("main_pager") {
             MainPagerContent(navController = navController)
         }
 
-        // Rute 2: DetailScreen (Diluar Pager)
         composable(
             route = Screen.Detail.route + "/{movieId}",
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
-            MovieDetailScreen(movieId = movieId, navController = navController)
+            MovieDetailScreen(movieId = movieId, navController = navController, modifier = Modifier.navigationBarsPadding())
+        }
+        composable(
+            route = Screen.Booking.route + "/{movieId}",
+            arguments = listOf(navArgument("movieId") {type = NavType.IntType })
+        ){ backStackEntry ->
+            val movieId = backStackEntry.arguments?.getInt("movireId") ?: 0
+            TicketBookingScreen(movieId = movieId, navController = navController)
+
         }
     }
 }
@@ -83,6 +89,7 @@ fun MainPagerContent(navController: NavHostController) {
             AnimatedBottomNav(
                 pagerState = pagerState,
                 navigationItems = navigationItems,
+                modifier = Modifier.navigationBarsPadding(),
                 onPageSelected = { index ->
                     scope.launch {
                         pagerState.animateScrollToPage(index)
@@ -93,8 +100,8 @@ fun MainPagerContent(navController: NavHostController) {
     ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-            // beyondViewportPageCount membantu preload halaman tetangga agar transisi lancar
+//            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
+            modifier = Modifier.padding(innerPadding),
             beyondViewportPageCount = 1
         ) { page ->
             when (navigationItems[page]) {
