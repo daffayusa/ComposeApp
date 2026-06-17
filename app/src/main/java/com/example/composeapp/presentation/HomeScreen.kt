@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -62,6 +63,7 @@ import com.example.composeapp.component.MainCard2
 import com.example.composeapp.component.MainCardContent
 import com.example.composeapp.component.MovieBannerCard
 import com.example.composeapp.component.SearchBarHome
+import com.example.composeapp.component.TopBarHomeScreen
 import com.example.composeapp.data.CinemaData
 import com.example.composeapp.data.MovieData
 import com.example.composeapp.navigation.Screen
@@ -109,58 +111,58 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier) {
         }
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = gradientBrush)
+            .background(brush = gradientBrush),
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(
+        TopBarHomeScreen(
+            name = "Daffa Yusa",
+            navController = navController,
+            modifier = Modifier.statusBarsPadding()
+        )
+        SearchBarHome(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholderText = "Cari Film",
+            modifier = Modifier.fillMaxWidth() .padding(start = 8.dp, end = 8.dp, top = 12.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        MovieBannerCard(
+            modifier = Modifier.fillMaxWidth(),
+            navController = navController
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, top = 12.dp),
-            verticalArrangement = Arrangement.Center,
+                .padding(start = 8.dp, end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            SearchBarHome(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                placeholderText = "Cari Film",
-                modifier = Modifier.fillMaxWidth()
+            Icon(
+                painter = painterResource(id = R.drawable.clapperboard),
+                contentDescription = null,
+
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
-            MovieBannerCard(
-                modifier = Modifier.fillMaxWidth(),
-                navController = navController
+            Text(
+                text = "Now Showing",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onSurface
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 0.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.clapperboard),
-                    contentDescription = null,
-
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "Now Showing",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
+        }
+        Spacer(modifier = Modifier.height(12.dp))
 //            LazyColumn(
 //                verticalArrangement = Arrangement.spacedBy(12.dp),
 //                contentPadding = PaddingValues(bottom = 32.dp)
@@ -170,21 +172,21 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier) {
 //                }
 //            }
 
-            // Hapus background color pada LazyVerticalGrid agar gradasi Box terlihat
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 0.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(genres){genre ->
-                    GenreChip(
-                        text = genre,
-                        isSelected = genre == selectedGenre,
-                        onClick = {selectedGenre = genre}
-                    )
-                }
+        // Hapus background color pada LazyVerticalGrid agar gradasi Box terlihat
+        LazyRow(
+            modifier = Modifier.fillMaxWidth() .padding(start = 8.dp, end = 8.dp),
+            contentPadding = PaddingValues(horizontal = 0.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(genres){genre ->
+                GenreChip(
+                    text = genre,
+                    isSelected = genre == selectedGenre,
+                    onClick = {selectedGenre = genre}
+                )
             }
-            Spacer(modifier = Modifier.height(12.dp))
+        }
+        Spacer(modifier = Modifier.height(12.dp))
 //            LazyVerticalGrid(
 //                columns = GridCells.Adaptive(minSize = 120.dp),
 //                modifier = Modifier.fillMaxSize(),
@@ -204,49 +206,48 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier) {
 //                    )
 //                }
 //            }
-            HorizontalPager(
-                state = moviePagerState,
-                modifier = Modifier.fillMaxWidth() ,
-                contentPadding = PaddingValues(horizontal = 88.dp),
-                pageSpacing = 4.dp,
-                verticalAlignment = Alignment.CenterVertically
-            ) { page ->
-                val movie = filteredMovies[page]
+        HorizontalPager(
+            state = moviePagerState,
+            modifier = Modifier.fillMaxWidth() .padding(start = 8.dp, end = 8.dp),
+            contentPadding = PaddingValues(horizontal = 88.dp),
+            pageSpacing = 4.dp,
+            verticalAlignment = Alignment.CenterVertically
+        ) { page ->
+            val movie = filteredMovies[page]
 
 
-                val pageOffset = (
-                        (moviePagerState.currentPage - page) + moviePagerState.currentPageOffsetFraction
-                        ).absoluteValue
+            val pageOffset = (
+                    (moviePagerState.currentPage - page) + moviePagerState.currentPageOffsetFraction
+                    ).absoluteValue
 
-                Card(
-                    modifier = Modifier
-                        .widthIn(min = 120.dp, max = 180.dp)
-                        .aspectRatio(0.7f)
-                        .padding(bottom = 12.dp)
-                        .graphicsLayer {
+            Card(
+                modifier = Modifier
+                    .widthIn(min = 120.dp, max = 180.dp)
+                    .aspectRatio(0.7f)
+                    .padding(bottom = 12.dp)
+                    .graphicsLayer {
 
-                            val scale = lerp(
-                                start = 0.85f,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                            )
-                            scaleX = scale
-                            scaleY = scale
+                        val scale = lerp(
+                            start = 0.85f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                        scaleX = scale
+                        scaleY = scale
 
-                            alpha = lerp(
-                                start = 0.5f,
-                                stop = 1f,
-                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                            )
-                        }
-                        .clickable {
-                            navController.navigate(Screen.Detail.route + "/${movie.id}")
-                        },
-                    shape = RoundedCornerShape(24.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                ) {
-                    MainCardContent(movie = movie)
-                }
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }
+                    .clickable {
+                        navController.navigate(Screen.Detail.route + "/${movie.id}")
+                    },
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                MainCardContent(movie = movie)
             }
         }
     }

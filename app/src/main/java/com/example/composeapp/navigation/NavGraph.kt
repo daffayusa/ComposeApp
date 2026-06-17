@@ -1,5 +1,6 @@
 package com.example.composeapp.navigation
 
+import ProfileScreen
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,7 +14,7 @@ import androidx.navigation.navArgument
 import com.example.composeapp.presentation.HistoryScreen
 import com.example.composeapp.presentation.HomeScreen
 import com.example.composeapp.presentation.MovieDetailScreen
-import com.example.composeapp.presentation.ProfileScreen
+
 
 @Composable
 fun NavGraph(
@@ -25,7 +26,6 @@ fun NavGraph(
         startDestination = Screen.Home.route,
         modifier = modifier
     ) {
-        // Halaman Utama
         composable(Screen.Home.route) {
             HomeScreen(navController = navController, modifier = Modifier)
         }
@@ -35,10 +35,10 @@ fun NavGraph(
         }
 
         composable(Screen.Profile.route) {
-            ProfileScreen()
+//            ProfileScreen()
         }
 
-        // Halaman Detail dengan Argument (Seperti pola CatSocial)
+
         composable(
             route = Screen.Detail.route + "/{movieId}",
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })

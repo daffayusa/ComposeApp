@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -50,10 +54,7 @@ fun TopBarHomeScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(8.dp)
-            .statusBarsPadding()
+        modifier = modifier
     ){
         Row(
             modifier = Modifier
@@ -106,7 +107,39 @@ fun TopBarHomeScreen(
         }
     }
 }
+@Composable
+fun SimpleTopBar(
+    title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "Back",
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable { onBackClick() }
+                .padding(8.dp)
+        )
 
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
 @Preview
 @Composable
 private fun TopBarPrev() {

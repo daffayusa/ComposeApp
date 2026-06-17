@@ -1,8 +1,17 @@
 package com.example.composeapp.presentation
 
+import ProfileScreen
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -31,6 +40,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.composeapp.component.SimpleTopBar
 //import com.example.composeapp.component.bottomNav.BottomNavComponent
 import com.example.composeapp.component.TopBarHomeScreen
 import com.example.composeapp.component.bottomNav.AnimatedBottomNav
@@ -69,7 +79,6 @@ fun MainScreen() {
 fun MainPagerContent(navController: NavHostController) {
     val navigationItems = listOf(Screen.History, Screen.Home, Screen.Profile)
 
-    // Mengatur agar selalu mulai dari indeks 1 (Home)
     val pagerState = rememberPagerState(initialPage = 1) {
         navigationItems.size
     }
@@ -77,14 +86,44 @@ fun MainPagerContent(navController: NavHostController) {
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        topBar = {
-            if (pagerState.currentPage == 1) {
-                TopBarHomeScreen(
-                    name = "Daffa Yusa", //
-                    navController = navController
-                )
-            }
-        },
+//        topBar = {
+//            AnimatedContent(
+//                targetState = pagerState.currentPage,
+//                transitionSpec = {
+//                    val animDuration = 1
+//
+//                    if (targetState > initialState) {
+//                        (slideInHorizontally(animationSpec = tween(animDuration)) { width -> width } +
+//                                fadeIn(animationSpec = tween(animDuration))).togetherWith(
+//                            slideOutHorizontally(animationSpec = tween(animDuration)) { width -> -width } +
+//                                    fadeOut(animationSpec = tween(animDuration))
+//                        )
+//                    } else {
+//                        (slideInHorizontally(animationSpec = tween(animDuration)) { width -> -width } +
+//                                fadeIn(animationSpec = tween(animDuration))).togetherWith(
+//                            slideOutHorizontally(animationSpec = tween(animDuration)) { width -> width } +
+//                                    fadeOut(animationSpec = tween(animDuration))
+//                        )
+//                    }.using(SizeTransform(clip = false))
+//                },
+//                label = "TopBarAnimation"
+//            ) { targetPage ->
+//                when (targetPage) {
+//                    0 -> SimpleTopBar(
+//                        title = "History",
+//                        onBackClick = { scope.launch { pagerState.animateScrollToPage(1) } }
+//                    )
+//                    1 -> TopBarHomeScreen(
+//                        name = "Daffa Yusa",
+//                        navController = navController
+//                    )
+//                    2 -> SimpleTopBar(
+//                        title = "Profile",
+//                        onBackClick = { scope.launch { pagerState.animateScrollToPage(1) } }
+//                    )
+//                }
+//            }
+//        },
         bottomBar = {
             AnimatedBottomNav(
                 pagerState = pagerState,
@@ -100,14 +139,18 @@ fun MainPagerContent(navController: NavHostController) {
     ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
-//            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-            modifier = Modifier.padding(innerPadding),
+//            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
             beyondViewportPageCount = 1
         ) { page ->
             when (navigationItems[page]) {
                 Screen.History -> HistoryScreen()
                 Screen.Home -> HomeScreen(navController = navController, modifier = Modifier)
-                Screen.Profile -> ProfileScreen()
+                Screen.Profile -> ProfileScreen(
+                    modifier = Modifier,
+                    onNavigateHome = {
+                    scope.launch { pagerState.animateScrollToPage(1) } // Geser ke Home
+                })
                 else -> Unit
             }
         }
